@@ -14,32 +14,24 @@ namespace FileFragmentationProject.Model
         {
             EnsureFragmentFolderExists();
         }
-
-        // 🔹 Utility: Ensures the fragment folder is always available
         private void EnsureFragmentFolderExists()
         {
             if (!Directory.Exists(FragmentFolder))
                 Directory.CreateDirectory(FragmentFolder);
         }
-
-        // Step 1: Create main input file
         public void CreateFile(string content)
         {
             File.WriteAllText(InputFile, content);
         }
-
-        // Step 2: Fragmentation logic
         public List<string> FragmentFile(int fragmentSize)
         {
             if (!File.Exists(InputFile))
                 throw new FileNotFoundException($"File {InputFile} not found!");
-
-            // ✅ Ensure folder exists (important if previous cleanup deleted it)
             EnsureFragmentFolderExists();
 
             string content = File.ReadAllText(InputFile);
             List<string> createdFiles = new List<string>();
-            int totalFragments = (int)Math.Ceiling((double)content.Length / fragmentSize);
+            int totalFragments = (int)Math.Ceiling((double)content.Length/fragmentSize);
 
             for (int i = 0; i < totalFragments; i++)
             {
@@ -53,8 +45,6 @@ namespace FileFragmentationProject.Model
 
             return createdFiles;
         }
-
-        // Step 3: Read a specific fragment
         public string ReadFragment(string fileName)
         {
             string path = Path.Combine(FragmentFolder, fileName);
@@ -63,8 +53,6 @@ namespace FileFragmentationProject.Model
 
             return File.ReadAllText(path);
         }
-
-        // Step 4: Defragmentation (combine all fragments)
         public string DefragmentFiles(List<string> fragmentFiles)
         {
             List<string> combined = new List<string>();
@@ -74,15 +62,13 @@ namespace FileFragmentationProject.Model
                     combined.Add(File.ReadAllText(file));
             }
 
-            string combinedContent = string.Join("", combined);
-            File.WriteAllText(OutputFile, combinedContent);
+            string combinedContent = string.Join("",combined);
+            File.WriteAllText(OutputFile,combinedContent);
             return combinedContent;
         }
-
-        // Step 5: Compare input.txt and output.txt
         public bool CompareFiles()
         {
-            if (!File.Exists(InputFile) || !File.Exists(OutputFile))
+            if (!File.Exists(InputFile)||!File.Exists(OutputFile))
                 return false;
 
             string inputData = File.ReadAllText(InputFile);
@@ -90,13 +76,10 @@ namespace FileFragmentationProject.Model
 
             return inputData.Equals(outputData);
         }
-
-        // Step 6: Delete all files from previous or current run
         public void DeleteAllFiles()
         {
             try
             {
-                // Delete fragments folder if it exists
                 if (Directory.Exists(FragmentFolder))
                 {
                     var files = Directory.GetFiles(FragmentFolder);
@@ -107,13 +90,12 @@ namespace FileFragmentationProject.Model
                     Directory.Delete(FragmentFolder);
                 }
 
-                // Delete input/output files
                 if (File.Exists(InputFile)) File.Delete(InputFile);
                 if (File.Exists(OutputFile)) File.Delete(OutputFile);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while deleting files: {ex.Message}");
+                Console.WriteLine($"Error while deleting files:{ex.Message}");
             }
         }
     }
