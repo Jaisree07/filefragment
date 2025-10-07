@@ -7,9 +7,9 @@ namespace FileFragmentationProject
     {
         static void Main()
         {
-            FileModel model = new FileModel();
-            FileView view = new FileView();
-            FileController controller = new FileController(model, view);
+            FileModel model=new FileModel();
+            FileView view=new FileView();
+            FileController controller=new FileController(model, view);
             controller.Run();
         }
     }

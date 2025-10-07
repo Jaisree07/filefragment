@@ -14,30 +14,37 @@ namespace FileFragmentationProject.Model
         {
             EnsureFragmentFolderExists();
         }
+
         private void EnsureFragmentFolderExists()
         {
             if (!Directory.Exists(FragmentFolder))
                 Directory.CreateDirectory(FragmentFolder);
         }
+
         public void CreateFile(string content)
         {
             File.WriteAllText(InputFile, content);
         }
+
         public List<string> FragmentFile(int fragmentSize)
         {
             if (!File.Exists(InputFile))
                 throw new FileNotFoundException($"File {InputFile} not found!");
-            EnsureFragmentFolderExists();
+
+            if (!Directory.Exists(FragmentFolder))
+                Directory.CreateDirectory(FragmentFolder);
 
             string content = File.ReadAllText(InputFile);
             List<string> createdFiles = new List<string>();
             int totalFragments = (int)Math.Ceiling((double)content.Length/fragmentSize);
 
-            for (int i = 0; i < totalFragments; i++)
+            int padWidth = totalFragments.ToString().Length; 
+
+            for (int i=0;i<totalFragments;i++)
             {
-                int size = Math.Min(fragmentSize, content.Length - i * fragmentSize);
-                string fragmentContent = content.Substring(i * fragmentSize, size);
-                string fileName = Path.Combine(FragmentFolder, $"{(i + 1).ToString("D3")}.txt");
+                int size = Math.Min(fragmentSize,content.Length-i*fragmentSize);
+                string fragmentContent=content.Substring(i*fragmentSize,size);
+                string fileName = Path.Combine(FragmentFolder,$"{(i + 1).ToString().PadLeft(padWidth,'0')}.txt");
 
                 File.WriteAllText(fileName, fragmentContent);
                 createdFiles.Add(fileName);
@@ -45,6 +52,7 @@ namespace FileFragmentationProject.Model
 
             return createdFiles;
         }
+
         public string ReadFragment(string fileName)
         {
             string path = Path.Combine(FragmentFolder, fileName);
@@ -73,7 +81,6 @@ namespace FileFragmentationProject.Model
 
             string inputData = File.ReadAllText(InputFile);
             string outputData = File.ReadAllText(OutputFile);
-
             return inputData.Equals(outputData);
         }
         public void DeleteAllFiles()
@@ -95,7 +102,7 @@ namespace FileFragmentationProject.Model
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while deleting files:{ex.Message}");
+                Console.WriteLine($"Error:{ex.Message}");
             }
         }
     }
